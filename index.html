@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ઓખા નગરપાલિકા ચૂંટણી – મતદાન આંકડા</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'Noto Sans Gujarati', system-ui, sans-serif; }
+  .time-col { position: sticky; left: 0; z-index: 5; box-shadow: 3px 0 6px -3px rgba(15,23,42,.28); }
+  thead .time-col { z-index: 20; background-color: #1e40af; }
+  tbody tr:nth-child(4n+1) .time-col { background-color: #fff; }
+  tbody tr:nth-child(4n+3) .time-col { background-color: #f8fafc; }
+  tfoot .time-col { z-index: 6; background-color: #fef3c7; }
+  .row-numbers td { border-top: 1px solid #cbd5e1; }
+  .row-numbers td.time-col { border-top: 2px solid #94a3b8; }
+  .row-percent td { border-bottom: 2px solid #94a3b8; background: #f1f5f9; font-size: .85rem; color: #475569; font-weight: 700; padding: 2px 4px; }
+  .sec-divider { border-left: 3px solid #1e3a8a !important; }
+  .error-input { border: 2px solid #dc2626 !important; background: #fef2f2 !important; animation: shake .35s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+  /* ===== એક્સપોર્ટ (PDF/Image) – મોટા ફોન્ટ, ઓછી પેડિંગ ===== */
+  .export-mode { font-family: 'Noto Sans Gujarati', sans-serif; }
+  .export-mode, .export-mode * { line-height: 1.55 !important; }
+  .export-mode h1 { font-size: 40px !important; margin: 0 !important; line-height: 1.2 !important; }
+  .export-mode h2 { font-size: 26px !important; margin: 0 0 12px !important; }
+  .export-mode .info-grid { display: grid !important; grid-template-columns: repeat(4, minmax(0,1fr)) !important; gap: 8px 14px !important; margin-bottom: 10px !important; }
+  .export-mode .info-grid label { font-size: 15px !important; margin-bottom: 2px !important; }
+  .export-mode .xv { text-align: center; font-weight: 800; color: #0f172a; font-size: 28px; padding: 4px 4px 8px; min-height: 30px; line-height: 1.4 !important; }
+  .export-mode .info-grid .xv { text-align: left; font-size: 20px; font-weight: 700; padding: 5px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; }
+  .export-mode .reg-table th { font-size: 18px !important; padding: 6px 22px !important; }
+  .export-mode .reg-table td { font-size: 26px !important; padding: 0 !important; min-width: 150px; }
+  .export-mode .main-table { width: 100% !important; border-collapse: collapse !important; }
+  .export-mode .main-table th { font-size: 21px !important; padding: 4px 6px 14px !important; white-space: nowrap !important; vertical-align: middle; }
+  .export-mode .main-table td { font-size: 28px !important; font-weight: 800 !important; padding: 3px 6px !important; white-space: nowrap !important; color: #0f172a; vertical-align: middle; }
+  .export-mode .main-table td.time-col { font-size: 23px !important; }
+  .export-mode .main-table tr.row-percent td { font-size: 24px !important; padding: 0 6px 10px !important; line-height: 1.4 !important; vertical-align: middle; color: #334155; }
+  .export-mode .footer-credit { display: block !important; font-size: 16px !important; margin-top: 10px !important; padding-top: 8px !important; border-top: 1px solid #cbd5e1; color: #334155; }
+  .export-mode .overflow-x-auto { overflow: visible !important; }
+  .export-mode .time-col { position: static !important; box-shadow: none !important; }
+
+  @media print {
+    .no-export { display: none !important; }
+    body { background: #fff !important; }
+    #appWrap { max-width: none !important; }
+    #reportArea { box-shadow: none !important; border-radius: 0 !important; }
+    .overflow-x-auto { overflow: visible !important; }
+    input { border-color: transparent !important; background: transparent !important; color: #0f172a !important; }
+    input::placeholder { color: transparent !important; }
+    .footer-credit { display: block !important; }
+    .time-col { position: static !important; box-shadow: none !important; }
+    @page { size: A4 landscape; margin: 5mm; }
+  }
+</style>
+</head>
+
+<body class="bg-slate-100 min-h-screen py-1 px-1 sm:px-4">
+<div id="appWrap" class="max-w-7xl mx-auto">
+
+  <div id="reportArea" class="bg-white rounded-xl shadow-md p-2 sm:p-4">
+
+    <div class="text-center mb-2">
+      <h1 class="text-xl sm:text-3xl font-extrabold text-slate-800 leading-snug">ઓખા નગરપાલિકા સામાન્ય ચૂંટણી – ૧૧</h1>
+      <h2 class="text-base sm:text-xl font-bold text-blue-700">મતદાન આંકડા પત્રક</h2>
+    </div>
+
+    <div class="info-grid grid grid-cols-2 sm:grid-cols-4 gap-x-2 gap-y-1.5 mb-2">
+      <div><label class="block text-xs sm:text-sm font-bold text-slate-600">પ્રિસાઇડિંગ ઓફિસરનું નામ</label>
+        <input id="info_officer" type="text" autocomplete="off" placeholder="નામ" class="w-full border border-slate-300 rounded-md px-2 py-1 text-base sm:text-lg font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+      <div><label class="block text-xs sm:text-sm font-bold text-slate-600">બૂથ નંબર</label>
+        <input id="info_boothNo" type="text" autocomplete="off" placeholder="નંબર" class="w-full border border-slate-300 rounded-md px-2 py-1 text-base sm:text-lg font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+      <div><label class="block text-xs sm:text-sm font-bold text-slate-600">બૂથ / સ્થળનું નામ</label>
+        <input id="info_boothName" type="text" autocomplete="off" placeholder="સ્થળ" class="w-full border border-slate-300 rounded-md px-2 py-1 text-base sm:text-lg font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+      <div><label class="block text-xs sm:text-sm font-bold text-slate-600">ઓફિસરનો મોબાઈલ નંબર</label>
+        <input id="info_mobile" type="tel" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="10 અંક" class="w-full border border-slate-300 rounded-md px-2 py-1 text-base sm:text-lg font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+    </div>
+
+    <div class="mb-2 overflow-x-auto">
+      <table class="reg-table border-collapse text-sm sm:text-base">
+        <thead>
+          <tr><th colspan="3" class="border border-slate-400 bg-slate-700 text-white px-3 py-1 text-center font-bold whitespace-nowrap">કુલ નોંધાયેલા મતદારો</th></tr>
+          <tr class="bg-slate-100 text-slate-700">
+            <th class="border border-slate-300 px-3 py-1 font-bold whitespace-nowrap">કુલ સ્ત્રી</th>
+            <th class="border border-slate-300 px-3 py-1 font-bold whitespace-nowrap">કુલ પુરુષ</th>
+            <th class="border border-slate-300 px-3 py-1 font-bold whitespace-nowrap">કુલ મતદારો</th>
+          </tr>
+        </thead>
+        <tbody><tr>
+          <td class="border border-slate-300 p-0"><input id="reg_f" type="text" inputmode="numeric" placeholder="0" class="w-full min-w-[100px] px-2 py-1 text-center text-lg font-bold bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"></td>
+          <td class="border border-slate-300 p-0"><input id="reg_m" type="text" inputmode="numeric" placeholder="0" class="w-full min-w-[100px] px-2 py-1 text-center text-lg font-bold bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"></td>
+          <td id="reg_total" class="border border-slate-300 px-3 py-1 text-center font-extrabold text-blue-700 bg-blue-50 text-xl">0</td>
+        </tr></tbody>
+      </table>
+    </div>
+
+    <div id="errorBanner" class="no-export hidden mb-2 bg-red-50 border-2 border-red-400 text-red-800 rounded-md px-3 py-2 text-sm sm:text-base font-bold leading-snug"></div>
+
+    <div class="no-export mb-2 flex items-start gap-2 bg-amber-50 border border-amber-300 text-amber-900 rounded-md px-2 py-1.5 text-xs sm:text-sm leading-relaxed">
+      <span class="text-base leading-none mt-0.5">💡</span>
+      <span><b>સૂચના:</b> ૨ કલાકનો કે પ્રોગ્રેસિવ – <b>કોઈ પણ એક ભરો, બીજો આપમેળે ભરાઈ જશે</b>. ઋણ (માઇનસ) આંકડા શક્ય નથી. ટેબલ ડાબે ↔ જમણે સ્ક્રોલ કરો; ‘સમય’ કોલમ ફ્રીઝ છે.</span>
+    </div>
+
+    <div class="overflow-x-auto border border-slate-300 rounded-lg">
+      <table class="main-table min-w-full border-collapse text-sm sm:text-base">
+        <thead>
+          <tr>
+            <th rowspan="2" class="time-col border border-slate-400 bg-blue-800 text-white px-2 py-1.5 text-center align-middle whitespace-nowrap font-bold">સમય</th>
+            <th colspan="3" class="border border-slate-400 bg-blue-700 text-white px-2 py-1.5 text-center whitespace-nowrap font-bold">૨ કલાક દરમિયાનના આંકડા</th>
+            <th colspan="3" class="sec-divider border border-slate-400 bg-blue-700 text-white px-2 py-1.5 text-center whitespace-nowrap font-bold">પ્રોગ્રેસિવ (અત્યાર સુધીના કુલ) આંકડા</th>
+          </tr>
+          <tr>
+            <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">સ્ત્રી</th>
+            <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">પુરુષ</th>
+            <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">કુલ</th>
+            <th class="sec-divider border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">સ્ત્રી</th>
+            <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">પુરુષ</th>
+            <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">કુલ</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+        <tfoot>
+          <tr class="row-numbers bg-amber-100 font-extrabold text-slate-800 text-lg sm:text-xl">
+            <td rowspan="2" class="time-col border border-slate-400 px-2 py-1 text-center whitespace-nowrap align-middle text-base">કુલ મતદાન</td>
+            <td id="tot_int_f" class="border border-slate-400 px-1 py-1 text-center">—</td>
+            <td id="tot_int_m" class="border border-slate-400 px-1 py-1 text-center">—</td>
+            <td id="tot_int_t" class="border border-slate-400 px-1 py-1 text-center">—</td>
+            <td id="tot_prg_f" class="sec-divider border border-slate-400 px-1 py-1 text-center">—</td>
+            <td id="tot_prg_m" class="border border-slate-400 px-1 py-1 text-center">—</td>
+            <td id="tot_prg_t" class="border border-slate-400 px-1 py-1 text-center">—</td>
+          </tr>
+          <tr class="row-percent bg-amber-50">
+            <td id="tot_int_fp" class="border border-slate-400 text-center">—</td>
+            <td id="tot_int_mp" class="border border-slate-400 text-center">—</td>
+            <td id="tot_int_tp" class="border border-slate-400 text-center">—</td>
+            <td id="tot_prg_fp" class="sec-divider border border-slate-400 text-center">—</td>
+            <td id="tot_prg_mp" class="border border-slate-400 text-center">—</td>
+            <td id="tot_prg_tp" class="border border-slate-400 text-center">—</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="footer-credit hidden text-center text-sm text-slate-700 mt-2 pt-2 border-t border-slate-300">
+      સૌજન્ય: પરબતભાઈ કરમુર, શ્રી કોરાડા વાડી પ્રાથમિક શાળા
+    </div>
+  </div>
+
+  <div class="no-export mt-3 flex flex-wrap gap-2 sm:gap-3 justify-center">
+    <button id="btnPdf" class="px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white font-semibold shadow transition disabled:opacity-60">📄 PDF ડાઉનલોડ</button>
+    <button id="btnImg" class="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold shadow transition disabled:opacity-60">🖼️ Image ડાઉનલોડ</button>
+    <button id="btnPrint" class="px-4 py-2.5 rounded-lg bg-slate-600 hover:bg-slate-700 active:scale-95 text-white font-semibold shadow transition">🖨️ પ્રિન્ટ કરો</button>
+    <button id="btnReset" class="px-4 py-2.5 rounded-lg bg-white border border-red-500 text-red-600 hover:bg-red-50 active:scale-95 font-semibold shadow-sm transition">🗑️ ડેટા સાફ કરો</button>
+  </div>
+  <p class="no-export text-center text-xs sm:text-sm text-slate-500 mt-2 mb-6">ડેટા તમારા બ્રાઉઝરમાં આપમેળે સેવ થાય છે — પેજ રિફ્રેશ કરવાથી ડેટા જળવાઈ રહેશે.</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const ROWS = 6;
+  const SLOTS = ['૦૭ થી ૦૯', '૦૯ થી ૧૧', '૧૧ થી ૦૧', '૦૧ થી ૦૩', '૦૩ થી ૦૫', '૦૫ થી ૦૬'];
+  const GN = { f: 'સ્ત્રી', m: 'પુરુષ' };
+  const LS_KEY = 'okha_nagarpalika_booth_v3', LS_OLD = 'okha_nagarpalika_booth_v2';
+  const EW = 1300; // એક્સપોર્ટ પહોળાઈ (px)
+
+  const blank = () => new Array(ROWS).fill('');
+  const $ = id => document.getElementById(id);
+  const n = v => { const x = parseInt(v, 10); return isNaN(x) ? 0 : x; };
+  // src[i]: 'i' = ૨ કલાકનો આંકડો યુઝરે નાખ્યો, 'p' = પ્રોગ્રેસિવ યુઝરે નાખ્યો, '' = ખાલી
+  const state = {
+    info: { officer: '', boothNo: '', boothName: '', mobile: '' },
+    reg: { f: '', m: '' },
+    int: { f: blank(), m: blank() },
+    prg: { f: blank(), m: blank() },
+    src: { f: blank(), m: blank() }
+  };
+
+  /* માત્ર અંકો (ગુજરાતી અંકો પણ ચાલે) – માઇનસ/દશાંશ શક્ય જ નથી */
+  function digits(s) {
+    s = String(s).replace(/[૦-૯]/g, d => '૦૧૨૩૪૫૬૭૮૯'.indexOf(d)).replace(/\D/g, '').slice(0, 6);
+    return s.replace(/^0+(?=\d)/, '');
+  }
+
+  function buildTable() {
+    const cls = 'w-full min-w-[64px] px-1 py-1 text-center text-lg sm:text-xl font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400';
+    const inp = (k, g, i, bg, extra = '') =>
+      `<td class="${extra} border border-slate-300 p-0"><input id="${k}_${g}_${i}" data-kind="${k}" data-g="${g}" data-i="${i}" type="text" inputmode="numeric" autocomplete="off" class="${cls} ${bg}"></td>`;
+    const tot = (k, i, extra = '') => `<td id="${k}_t_${i}" class="${extra} border border-slate-300 px-1 py-1 text-center font-extrabold text-slate-800 bg-slate-100 text-lg sm:text-xl">—</td>`;
+    const pc = (k, g, i, extra = '') => `<td id="${k}_${g}p_${i}" class="${extra} border border-slate-300 text-center">—</td>`;
+    let h = '';
+    for (let i = 0; i < ROWS; i++) {
+      const alt = i % 2;
+      h += `<tr class="row-numbers ${alt ? 'bg-slate-50' : 'bg-white'}">
+        <td rowspan="2" class="time-col border border-slate-300 px-2 py-1 text-center font-bold text-slate-700 whitespace-nowrap align-middle text-base">${SLOTS[i]}</td>
+        ${inp('int', 'f', i, 'bg-amber-50')}${inp('int', 'm', i, 'bg-amber-50')}${tot('int', i)}
+        ${inp('prg', 'f', i, 'bg-sky-50', 'sec-divider')}${inp('prg', 'm', i, 'bg-sky-50')}${tot('prg', i)}
+      </tr>
+      <tr class="row-percent ${alt ? 'bg-slate-100' : 'bg-slate-50'}">
+        ${pc('int', 'f', i)}${pc('int', 'm', i)}${pc('int', 't', i)}
+        ${pc('prg', 'f', i, 'sec-divider')}${pc('prg', 'm', i)}${pc('prg', 't', i)}
+      </tr>`;
+    }
+    $('tableBody').innerHTML = h;
+  }
+
+  /* ============================================================
+     ગણતરી: ૨-કલાક ↔ પ્રોગ્રેસિવ બંને તરફ. ઋણ આવે તો err પરત.
+  ============================================================ */
+  function calc(I, P, S, reg) {
+    const oi = blank(), op = blank();
+    let run = 0;
+    for (let i = 0; i < ROWS; i++) {
+      if (S[i] === 'i' && I[i] !== '') {
+        run += n(I[i]);
+        oi[i] = I[i]; op[i] = String(run);
+      } else if (S[i] === 'p' && P[i] !== '') {
+        const v = n(P[i]);
+        if (v < run) return { err: 'neg', row: i };
+        oi[i] = String(v - run); op[i] = String(v); run = v;
+      }
+      if (reg > 0 && run > reg) return { err: 'max', row: i };
+    }
+    return { I: oi, P: op };
+  }
+
+  function errMsg(r, g) {
+    return r.err === 'neg'
+      ? `‘${SLOTS[r.row]}’ માં ${GN[g]}નો પ્રોગ્રેસિવ આંકડો અગાઉના કુલ કરતાં ઓછો થાય છે — મતદાન ઘટી શકે નહીં, ઋણ (માઇનસ) આંકડો માન્ય નથી.`
+      : `‘${SLOTS[r.row]}’ માં ${GN[g]} મતદાન કુલ નોંધાયેલા ${GN[g]} મતદારો (${state.reg[g]}) કરતાં વધી જાય છે.`;
+  }
+
+  function onEdit(e) {
+    const el = e.target, k = el.dataset.kind, g = el.dataset.g, i = +el.dataset.i;
+    const v = digits(el.value);
+    if (v !== el.value) el.value = v;
+
+    const I = state.int[g].slice(), P = state.prg[g].slice(), S = state.src[g].slice();
+    if (k === 'int') I[i] = v; else P[i] = v;
+    S[i] = v === '' ? '' : (k === 'int' ? 'i' : 'p');
+    if (v === '') { I[i] = ''; P[i] = ''; }
+
+    const r = calc(I, P, S, n(state.reg[g]));
+    if (r.err) { showError(errMsg(r, g), el); return; }   // ટાઇપ કરતી વખતે અટકાવ્યા વિના ચેતવણી
+    state.int[g] = r.I; state.prg[g] = r.P; state.src[g] = S;
+    clearError(); render(); save();
+  }
+  // ફોકસ છોડતાં અમાન્ય લખાણ હટાવી છેલ્લી સાચી કિંમત પાછી
+  function onBlur(e) {
+    const el = e.target;
+    el.value = state[el.dataset.kind][el.dataset.g][+el.dataset.i];
+    clearError();
+  }
+
+  /* ============================================================
+     રેન્ડર
+  ============================================================ */
+  function pct(v, base) { return (!base || base <= 0) ? '—' : (v / base * 100).toFixed(1) + '%'; }
+  function setText(id, v) { const el = $(id); if (el) el.textContent = (v === '' || v == null) ? '—' : v; }
+  function setVal(id, v) { const el = $(id); if (el && el !== document.activeElement && el.value !== v) el.value = v; }
+  const lastOf = a => { for (let i = ROWS - 1; i >= 0; i--) if (a[i] !== '') return a[i]; return ''; };
+
+  function render() {
+    const rf = n(state.reg.f), rm = n(state.reg.m), rt = rf + rm;
+    $('reg_total').textContent = rt;
+    let sf = 0, sm = 0;
+
+    for (let i = 0; i < ROWS; i++) {
+      ['int', 'prg'].forEach(k => ['f', 'm'].forEach(g => setVal(`${k}_${g}_${i}`, state[k][g][i])));
+      const a = ['int', 'prg'].some(k => ['f', 'm'].some(g => state[k][g][i] !== ''));
+      ['int', 'prg'].forEach(k => {
+        const F = state[k].f[i], M = state[k].m[i];
+        const f = n(F), m = n(M), t = f + m;
+        setText(`${k}_t_${i}`, a ? t : '—');
+        setText(`${k}_fp_${i}`, a && F !== '' ? pct(f, rf) : '—');
+        setText(`${k}_mp_${i}`, a && M !== '' ? pct(m, rm) : '—');
+        setText(`${k}_tp_${i}`, a ? pct(t, rt) : '—');
+        if (k === 'int') { sf += f; sm += m; }
+      });
+    }
+
+    const lf = lastOf(state.prg.f), lm = lastOf(state.prg.m);
+    const any = lf !== '' || lm !== '';
+    const put = (k, f, m, hasF, hasM) => {
+      setText(`tot_${k}_f`, hasF ? f : '—'); setText(`tot_${k}_m`, hasM ? m : '—');
+      setText(`tot_${k}_t`, any ? f + m : '—');
+      setText(`tot_${k}_fp`, hasF ? pct(f, rf) : '—'); setText(`tot_${k}_mp`, hasM ? pct(m, rm) : '—');
+      setText(`tot_${k}_tp`, any ? pct(f + m, rt) : '—');
+    };
+    put('int', sf, sm, lf !== '', lm !== '');
+    put('prg', n(lf), n(lm), lf !== '', lm !== '');
+  }
+
+  /* ============================================================
+     એરર
+  ============================================================ */
+  function showError(msg, el) {
+    const b = $('errorBanner');
+    b.textContent = '⚠️ ' + msg; b.classList.remove('hidden');
+    if (el) el.classList.add('error-input');
+  }
+  function clearError() {
+    $('errorBanner').classList.add('hidden');
+    document.querySelectorAll('.error-input').forEach(el => el.classList.remove('error-input'));
+  }
+
+  /* ============================================================
+     સેવ / લોડ
+  ============================================================ */
+  function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {} }
+  const norm = a => Array.from({ length: ROWS }, (_, i) => (a && a[i] != null) ? digits(a[i]) : '');
+
+  function load() {
+    try {
+      let d = JSON.parse(localStorage.getItem(LS_KEY) || 'null'), old = false;
+      if (!d) { d = JSON.parse(localStorage.getItem(LS_OLD) || 'null'); old = true; }
+      if (!d) return;
+      Object.assign(state.info, d.info || {});
+      state.reg.f = digits((d.reg || {}).f || ''); state.reg.m = digits((d.reg || {}).m || '');
+      ['f', 'm'].forEach(g => {
+        let I = norm(d.int && d.int[g]), P = norm(d.prg && d.prg[g]), S;
+        if (!old && d.src) S = Array.from({ length: ROWS }, (_, i) => d.src[g][i] || '');
+        else S = Array.from({ length: ROWS }, (_, i) => (d.intUserSet && d.intUserSet[g][i] && I[i] !== '') ? 'i' : (d.prgUserSet && d.prgUserSet[g][i] && P[i] !== '') ? 'p' : (I[i] !== '' ? 'i' : ''));
+        const r = calc(I, P, S, 0);
+        if (!r.err) { state.int[g] = r.I; state.prg[g] = r.P; state.src[g] = S; }
+      });
+    } catch (e) { console.warn('ડેટા લોડ ન થયો', e); }
+  }
+
+  /* ============================================================
+     ઇવેન્ટ
+  ============================================================ */
+  function attach() {
+    document.querySelectorAll('#tableBody input').forEach(el => {
+      el.addEventListener('input', onEdit);
+      el.addEventListener('blur', onBlur);
+    });
+    ['officer', 'boothNo', 'boothName', 'mobile'].forEach(k => {
+      const el = $('info_' + k);
+      el.addEventListener('input', () => {
+        if (k === 'mobile') el.value = digits(el.value).slice(0, 10);
+        state.info[k] = el.value; save();
+      });
+    });
+    ['f', 'm'].forEach(g => $('reg_' + g).addEventListener('input', e => {
+      const v = digits(e.target.value); e.target.value = v;
+      state.reg[g] = v; clearError(); render(); save();
+      const last = n(lastOf(state.prg[g]));
+      if (v !== '' && last > n(v)) showError(`${GN[g]} મતદાન (${last}) નોંધાયેલા મતદારો કરતાં વધુ છે — કૃપા કરી તપાસો.`, e.target);
+    }));
+    $('btnPdf').onclick = exportPDF;
+    $('btnImg').onclick = exportImage;
+    $('btnPrint').onclick = () => window.print();
+    $('btnReset').onclick = resetAll;
+  }
+
+  /* ============================================================
+     એક્સપોર્ટ: ઑફ-સ્ક્રીન ક્લોન → ઇનપુટ્સને ટેક્સ્ટમાં ફેરવી → કેનવાસ
+  ============================================================ */
+  function fileName(ext) {
+    const b = (state.info.boothNo || '').replace(/[^0-9A-Za-z]/g, '') || 'NA';
+    const d = new Date(), p = x => String(x).padStart(2, '0');
+    return `Booth_${b}_Time_${p(d.getHours())}-${p(d.getMinutes())}.${ext}`;
+  }
+
+  async function renderCanvas() {
+    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+    const src = $('reportArea');
+    const host = document.createElement('div');
+    host.style.cssText = `position:fixed;left:-30000px;top:0;width:${EW}px;background:#fff;`;
+    const c = src.cloneNode(true);
+    c.querySelectorAll('.no-export').forEach(el => el.remove());
+    c.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+    const si = src.querySelectorAll('input'), ci = c.querySelectorAll('input');
+    const keep = [...ci];
+    keep.forEach((el, k) => {
+      const d = document.createElement('div');
+      d.className = 'xv'; d.textContent = si[k].value || '\u00a0';
+      el.replaceWith(d);
+    });
+    // ટોચની એક જ લાઈન: બૂથ નંબર, સ્થળ, કુલ સ્ત્રી, પુરુષ, મતદારો
+    const esc = t => String(t).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+    const rf = n(state.reg.f), rm = n(state.reg.m);
+    const hb = (l, v, fx, col) => `<div style="flex:${fx};min-width:0;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;padding:4px 10px 10px;"><div style="font-size:15px;font-weight:700;color:#475569;line-height:1.6;">${l}</div><div style="font-size:26px;font-weight:800;color:${col || '#0f172a'};line-height:1.7;min-height:46px;white-space:nowrap;">${v ? esc(v) : '&nbsp;'}</div></div>`;
+    const strip = document.createElement('div');
+    strip.style.cssText = 'display:flex;gap:8px;margin-bottom:10px;';
+    strip.innerHTML = hb('પ્રિસાઇડિંગ ઓફિસર', state.info.officer, 2.2) + hb('મોબાઈલ નંબર', state.info.mobile, 1.6) +
+      hb('બૂથ નં.', state.info.boothNo, 0.9) + hb('બૂથ / સ્થળ', state.info.boothName, 2.4) +
+      hb('કુલ સ્ત્રી', state.reg.f, 1) + hb('કુલ પુરુષ', state.reg.m, 1) +
+      hb('કુલ મતદારો', String(rf + rm), 1.1, '#1d4ed8');
+    c.querySelector('.reg-table').parentElement.remove();
+    c.querySelector('h1').parentElement.remove();
+    const ig = c.querySelector('.info-grid'); ig.parentElement.replaceChild(strip, ig);
+    // rowspan કાઢી નાખો (html2canvas માં સમય/કુલ લખાણ કપાતું હતું)
+    c.querySelectorAll('td[rowspan]').forEach(td => {
+      const bg = td.closest('tfoot') ? '#fef3c7' : '#ffffff';
+      td.removeAttribute('rowspan');
+      td.style.cssText += `;border-bottom:0;vertical-align:middle;background:${bg};`;
+      td.innerHTML = `<span style="display:inline-block;position:relative;top:22px;">${td.textContent}</span>`;
+      const fill = document.createElement('td');
+      fill.className = td.className; fill.innerHTML = '&nbsp;';
+      fill.style.cssText = `border-top:0;background:${bg};`;
+      const nx = td.parentElement.nextElementSibling;
+      nx.insertBefore(fill, nx.firstChild);
+    });
+    c.classList.add('export-mode');
+    c.querySelector('.footer-credit').classList.remove('hidden');
+    c.style.cssText = `width:${EW}px;max-width:${EW}px;margin:0;padding:14px 18px;border-radius:0;box-shadow:none;background:#fff;box-sizing:border-box;`;
+    host.appendChild(c); document.body.appendChild(host);
+    try {
+      const w = EW, h = c.offsetHeight;
+      const scale = Math.min(2, Math.sqrt(14e6 / (w * h)));
+      return await html2canvas(c, { scale, backgroundColor: '#ffffff', useCORS: true, logging: false, windowWidth: EW + 40, scrollX: 0, scrollY: 0 });
+    } finally { host.remove(); }
+  }
+
+  async function withBtn(id, label, fn) {
+    const b = $(id); b.disabled = true; b.textContent = '⏳ બની રહ્યું છે...';
+    try { await fn(); } catch (e) { console.error(e); alert('ફાઇલ બનાવવામાં ભૂલ આવી. ફરી પ્રયાસ કરો.'); }
+    finally { b.disabled = false; b.textContent = label; }
+  }
+
+  function exportPDF() {
+    return withBtn('btnPdf', '📄 PDF ડાઉનલોડ', async () => {
+      const cv = await renderCanvas();
+      // A4 લેન્ડસ્કેપ કેનવાસમાં બંધબેસતું ગોઠવો – હંમેશાં ૧ જ પેજ
+      const W = cv.width, H = Math.floor(W * 210 / 297) - 2;
+      const out = document.createElement('canvas'); out.width = W; out.height = H;
+      const x = out.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+      const m = Math.round(W * 0.012);
+      const s = Math.min((W - 2 * m) / cv.width, (H - 2 * m) / cv.height);
+      const w = cv.width * s, h = cv.height * s;
+      x.drawImage(cv, (W - w) / 2, m, w, h);
+      await html2pdf().set({
+        margin: 0, filename: fileName('pdf'),
+        image: { type: 'jpeg', quality: 0.96 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      }).from(out, 'canvas').save();
+    });
+  }
+
+  function exportImage() {
+    return withBtn('btnImg', '🖼️ Image ડાઉનલોડ', async () => {
+      const cv = await renderCanvas();
+      const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = fileName('png');
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    });
+  }
+
+  function resetAll() {
+    if (!confirm('શું તમે ખરેખર બધો ડેટા સાફ કરવા માંગો છો? આ ક્રિયા પાછી ફેરવી શકાશે નહીં.')) return;
+    try { localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_OLD); } catch (e) {}
+    state.info = { officer: '', boothNo: '', boothName: '', mobile: '' };
+    state.reg = { f: '', m: '' };
+    ['int', 'prg', 'src'].forEach(k => state[k] = { f: blank(), m: blank() });
+    ['officer', 'boothNo', 'boothName', 'mobile'].forEach(k => $('info_' + k).value = '');
+    $('reg_f').value = ''; $('reg_m').value = '';
+    document.querySelectorAll('#tableBody input').forEach(el => el.value = '');
+    clearError(); render();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    buildTable(); load();
+    ['officer', 'boothNo', 'boothName', 'mobile'].forEach(k => $('info_' + k).value = state.info[k]);
+    $('reg_f').value = state.reg.f; $('reg_m').value = state.reg.m;
+    attach(); render();
+  });
+})();
+</script>
+</body>
+</html>
