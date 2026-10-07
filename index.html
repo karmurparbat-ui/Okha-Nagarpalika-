@@ -154,6 +154,7 @@
   <div class="no-export mt-3 flex flex-wrap gap-2 sm:gap-3 justify-center">
     <button id="btnPdf" class="px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white font-semibold shadow transition disabled:opacity-60">📄 PDF ડાઉનલોડ</button>
     <button id="btnImg" class="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold shadow transition disabled:opacity-60">🖼️ Image ડાઉનલોડ</button>
+    <button id="btnWa" class="px-4 py-2.5 rounded-lg bg-green-500 hover:bg-green-600 active:scale-95 text-white font-semibold shadow transition disabled:opacity-60">💬 WhatsApp શેર</button>
     <button id="btnPrint" class="px-4 py-2.5 rounded-lg bg-slate-600 hover:bg-slate-700 active:scale-95 text-white font-semibold shadow transition">🖨️ પ્રિન્ટ કરો</button>
     <button id="btnReset" class="px-4 py-2.5 rounded-lg bg-white border border-red-500 text-red-600 hover:bg-red-50 active:scale-95 font-semibold shadow-sm transition">🗑️ ડેટા સાફ કરો</button>
   </div>
@@ -312,7 +313,7 @@
   /* ============================================================
      સેવ / લોડ
   ============================================================ */
-  function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {} }
+  function save() { resetPending(); try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {} }
   const norm = a => Array.from({ length: ROWS }, (_, i) => (a && a[i] != null) ? digits(a[i]) : '');
 
   function load() {
@@ -355,6 +356,7 @@
     }));
     $('btnPdf').onclick = exportPDF;
     $('btnImg').onclick = exportImage;
+    $('btnWa').onclick = shareWhatsApp;
     $('btnPrint').onclick = () => window.print();
     $('btnReset').onclick = resetAll;
   }
@@ -425,6 +427,14 @@
     finally { b.disabled = false; b.textContent = label; }
   }
 
+  function deliver(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
   function exportPDF() {
     return withBtn('btnPdf', '📄 PDF ડાઉનલોડ', async () => {
       const cv = await renderCanvas();
@@ -436,11 +446,12 @@
       const s = Math.min((W - 2 * m) / cv.width, (H - 2 * m) / cv.height);
       const w = cv.width * s, h = cv.height * s;
       x.drawImage(cv, (W - w) / 2, m, w, h);
-      await html2pdf().set({
+      const blob = await html2pdf().set({
         margin: 0, filename: fileName('pdf'),
         image: { type: 'jpeg', quality: 0.96 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-      }).from(out, 'canvas').save();
+      }).from(out, 'canvas').outputPdf('blob');
+      deliver(blob, fileName('pdf'));
     });
   }
 
@@ -448,12 +459,48 @@
     return withBtn('btnImg', '🖼️ Image ડાઉનલોડ', async () => {
       const cv = await renderCanvas();
       const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = fileName('png');
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      deliver(blob, fileName('png'));
     });
+  }
+
+  /* ===== WhatsApp શેર: ઇમેજ બનાવો → ડાઉનલોડ → શેર શીટ (WhatsApp પસંદ કરો) ===== */
+  let pending = null;
+  const WA_LABEL = '💬 WhatsApp શેર';
+  function resetPending() { pending = null; const b = $('btnWa'); if (b && !b.disabled) b.textContent = WA_LABEL; }
+
+  async function shareFile(f) {
+    await navigator.share({ files: [f], title: f.name, text: 'મતદાન આંકડા પત્રક – ' + (state.info.boothName || '') + ' (બૂથ ' + (state.info.boothNo || '') + ')' });
+  }
+
+  async function shareWhatsApp() {
+    const b = $('btnWa');
+    if (pending) {                       // તૈયાર ફાઇલ – તરત શેર
+      try { await shareFile(pending); } catch (e) { if (e.name !== 'AbortError') console.error(e); }
+      return;
+    }
+    b.disabled = true; b.textContent = '⏳ બની રહ્યું છે...';
+    let file = null;
+    try {
+      const cv = await renderCanvas();
+      const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+      const name = fileName('png');
+      deliver(blob, name);              // ડાઉનલોડ પણ આપમેળે
+      file = new File([blob], name, { type: 'image/png' });
+    } catch (e) {
+      console.error(e); alert('ફાઇલ બનાવવામાં ભૂલ આવી. ફરી પ્રયાસ કરો.');
+      b.disabled = false; b.textContent = WA_LABEL; return;
+    }
+    b.disabled = false; b.textContent = WA_LABEL;
+    if (!(navigator.canShare && navigator.canShare({ files: [file] }))) {
+      alert('ફાઇલ ડાઉનલોડ થઈ ગઈ છે. આ બ્રાઉઝરમાં સીધું શેર શક્ય નથી – WhatsApp ખોલી ડાઉનલોડ થયેલી ફાઇલ મોકલો.');
+      return;
+    }
+    try { await shareFile(file); }
+    catch (e) {
+      if (e.name === 'NotAllowedError') {   // ફાઇલ બનવામાં સમય લાગ્યો – એક વધુ ટેપ
+        pending = file; b.textContent = '✅ તૈયાર – ફરી દબાવી WhatsApp પર મોકલો';
+      } else if (e.name !== 'AbortError') console.error(e);
+    }
   }
 
   function resetAll() {
