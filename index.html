@@ -182,9 +182,9 @@
   };
 
   /* માત્ર અંકો (ગુજરાતી અંકો પણ ચાલે) – માઇનસ/દશાંશ શક્ય જ નથી */
-  function digits(s) {
-    s = String(s).replace(/[૦-૯]/g, d => '૦૧૨૩૪૫૬૭૮૯'.indexOf(d)).replace(/\D/g, '').slice(0, 6);
-    return s.replace(/^0+(?=\d)/, '');
+  function digits(s, max = 6, keepZero = false) {
+    s = String(s).replace(/[૦-૯]/g, d => '૦૧૨૩૪૫૬૭૮૯'.indexOf(d)).replace(/\D/g, '').slice(0, max);
+    return keepZero ? s : s.replace(/^0+(?=\d)/, '');
   }
 
   function buildTable() {
@@ -343,7 +343,7 @@
     ['officer', 'boothNo', 'boothName', 'mobile'].forEach(k => {
       const el = $('info_' + k);
       el.addEventListener('input', () => {
-        if (k === 'mobile') el.value = digits(el.value).slice(0, 10);
+        if (k === 'mobile') el.value = digits(el.value, 10, true);
         state.info[k] = el.value; save();
       });
     });
