@@ -25,6 +25,15 @@
   .error-input { border: 2px solid #dc2626 !important; background: #fef2f2 !important; animation: shake .35s; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
 
+  /* ===== ઉપરની ચાલતી પટ્ટી (Ticker) ===== */
+  .marquee-wrap { overflow: hidden; position: relative; white-space: nowrap; }
+  .marquee-track { display: inline-flex; align-items: center; animation: marqueeMove 22s linear infinite; will-change: transform; }
+  .marquee-item { display: inline-block; padding: 7px 3rem 7px 0; font-weight: 700; font-size: .95rem; letter-spacing: .2px; }
+  @keyframes marqueeMove { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+  @media (prefers-reduced-motion: reduce) { .marquee-track { animation-duration: 60s; } }
+  @media (min-width: 640px) { .marquee-item { font-size: 1.05rem; } }
+
   /* ===== એક્સપોર્ટ (PDF/Image) – મોટા ફોન્ટ, ઓછી પેડિંગ ===== */
   .export-mode { font-family: 'Noto Sans Gujarati', sans-serif; }
   .export-mode, .export-mode * { line-height: 1.55 !important; }
@@ -62,6 +71,14 @@
 
 <body class="bg-slate-100 min-h-screen py-1 px-1 sm:px-4">
 <div id="appWrap" class="max-w-7xl mx-auto">
+
+  <!-- ===== ઉપર ચાલતી પટ્ટી (Ticker) ===== -->
+  <div class="no-export marquee-wrap mb-2 rounded-lg shadow bg-gradient-to-r from-blue-800 via-blue-700 to-blue-800 text-white">
+    <div class="marquee-track">
+      <span class="marquee-item">સૌજન્ય: પરબતભાઈ કરમુર, શ્રી કોરાડા વાડી પ્રાથમિક શાળા મો. 9586311704</span>
+      <span class="marquee-item" aria-hidden="true">સૌજન્ય: પરબતભાઈ કરમુર, શ્રી કોરાડા વાડી પ્રાથમિક શાળા મો. 9586311704</span>
+    </div>
+  </div>
 
   <div id="reportArea" class="bg-white rounded-xl shadow-md p-2 sm:p-4">
 
