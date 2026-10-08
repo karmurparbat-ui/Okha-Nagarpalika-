@@ -98,19 +98,20 @@
         <input id="info_mobile" type="tel" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="10 અંક" class="w-full border border-slate-300 rounded-md px-2 py-1 text-base sm:text-lg font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
     </div>
 
+    <!-- ===== કુલ નોંધાયેલા મતદારો (પુરુષ → સ્ત્રી → કુલ) ===== -->
     <div class="mb-2 overflow-x-auto">
       <table class="reg-table border-collapse text-sm sm:text-base">
         <thead>
           <tr><th colspan="3" class="border border-slate-400 bg-slate-700 text-white px-3 py-1 text-center font-bold whitespace-nowrap">કુલ નોંધાયેલા મતદારો</th></tr>
           <tr class="bg-slate-100 text-slate-700">
-            <th class="border border-slate-300 px-3 py-1 font-bold whitespace-nowrap">કુલ સ્ત્રી</th>
             <th class="border border-slate-300 px-3 py-1 font-bold whitespace-nowrap">કુલ પુરુષ</th>
+            <th class="border border-slate-300 px-3 py-1 font-bold whitespace-nowrap">કુલ સ્ત્રી</th>
             <th class="border border-slate-300 px-3 py-1 font-bold whitespace-nowrap">કુલ મતદારો</th>
           </tr>
         </thead>
         <tbody><tr>
-          <td class="border border-slate-300 p-0"><input id="reg_f" type="text" inputmode="numeric" placeholder="0" class="w-full min-w-[100px] px-2 py-1 text-center text-lg font-bold bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"></td>
           <td class="border border-slate-300 p-0"><input id="reg_m" type="text" inputmode="numeric" placeholder="0" class="w-full min-w-[100px] px-2 py-1 text-center text-lg font-bold bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"></td>
+          <td class="border border-slate-300 p-0"><input id="reg_f" type="text" inputmode="numeric" placeholder="0" class="w-full min-w-[100px] px-2 py-1 text-center text-lg font-bold bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"></td>
           <td id="reg_total" class="border border-slate-300 px-3 py-1 text-center font-extrabold text-blue-700 bg-blue-50 text-xl">0</td>
         </tr></tbody>
       </table>
@@ -132,11 +133,11 @@
             <th colspan="3" class="sec-divider border border-slate-400 bg-blue-700 text-white px-2 py-1.5 text-center whitespace-nowrap font-bold">પ્રોગ્રેસિવ (અત્યાર સુધીના કુલ) આંકડા</th>
           </tr>
           <tr>
+            <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">પુરુષ</th>
             <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">સ્ત્રી</th>
-            <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">પુરુષ</th>
             <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">કુલ</th>
-            <th class="sec-divider border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">સ્ત્રી</th>
-            <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">પુરુષ</th>
+            <th class="sec-divider border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">પુરુષ</th>
+            <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">સ્ત્રી</th>
             <th class="border border-slate-400 bg-blue-600 text-white px-2 py-1 text-center font-semibold">કુલ</th>
           </tr>
         </thead>
@@ -144,19 +145,19 @@
         <tfoot>
           <tr class="row-numbers bg-amber-100 font-extrabold text-slate-800 text-lg sm:text-xl">
             <td rowspan="2" class="time-col border border-slate-400 px-2 py-1 text-center whitespace-nowrap align-middle text-base">કુલ મતદાન</td>
-            <td id="tot_int_f" class="border border-slate-400 px-1 py-1 text-center">—</td>
             <td id="tot_int_m" class="border border-slate-400 px-1 py-1 text-center">—</td>
+            <td id="tot_int_f" class="border border-slate-400 px-1 py-1 text-center">—</td>
             <td id="tot_int_t" class="border border-slate-400 px-1 py-1 text-center">—</td>
-            <td id="tot_prg_f" class="sec-divider border border-slate-400 px-1 py-1 text-center">—</td>
-            <td id="tot_prg_m" class="border border-slate-400 px-1 py-1 text-center">—</td>
+            <td id="tot_prg_m" class="sec-divider border border-slate-400 px-1 py-1 text-center">—</td>
+            <td id="tot_prg_f" class="border border-slate-400 px-1 py-1 text-center">—</td>
             <td id="tot_prg_t" class="border border-slate-400 px-1 py-1 text-center">—</td>
           </tr>
           <tr class="row-percent bg-amber-50">
-            <td id="tot_int_fp" class="border border-slate-400 text-center">—</td>
             <td id="tot_int_mp" class="border border-slate-400 text-center">—</td>
+            <td id="tot_int_fp" class="border border-slate-400 text-center">—</td>
             <td id="tot_int_tp" class="border border-slate-400 text-center">—</td>
-            <td id="tot_prg_fp" class="sec-divider border border-slate-400 text-center">—</td>
-            <td id="tot_prg_mp" class="border border-slate-400 text-center">—</td>
+            <td id="tot_prg_mp" class="sec-divider border border-slate-400 text-center">—</td>
+            <td id="tot_prg_fp" class="border border-slate-400 text-center">—</td>
             <td id="tot_prg_tp" class="border border-slate-400 text-center">—</td>
           </tr>
         </tfoot>
@@ -216,12 +217,12 @@
       const alt = i % 2;
       h += `<tr class="row-numbers ${alt ? 'bg-slate-50' : 'bg-white'}">
         <td rowspan="2" class="time-col border border-slate-300 px-2 py-1 text-center font-bold text-slate-700 whitespace-nowrap align-middle text-base">${SLOTS[i]}</td>
-        ${inp('int', 'f', i, 'bg-amber-50')}${inp('int', 'm', i, 'bg-amber-50')}${tot('int', i)}
-        ${inp('prg', 'f', i, 'bg-sky-50', 'sec-divider')}${inp('prg', 'm', i, 'bg-sky-50')}${tot('prg', i)}
+        ${inp('int', 'm', i, 'bg-amber-50')}${inp('int', 'f', i, 'bg-amber-50')}${tot('int', i)}
+        ${inp('prg', 'm', i, 'bg-sky-50', 'sec-divider')}${inp('prg', 'f', i, 'bg-sky-50')}${tot('prg', i)}
       </tr>
       <tr class="row-percent ${alt ? 'bg-slate-100' : 'bg-slate-50'}">
-        ${pc('int', 'f', i)}${pc('int', 'm', i)}${pc('int', 't', i)}
-        ${pc('prg', 'f', i, 'sec-divider')}${pc('prg', 'm', i)}${pc('prg', 't', i)}
+        ${pc('int', 'm', i)}${pc('int', 'f', i)}${pc('int', 't', i)}
+        ${pc('prg', 'm', i, 'sec-divider')}${pc('prg', 'f', i)}${pc('prg', 't', i)}
       </tr>`;
     }
     $('tableBody').innerHTML = h;
