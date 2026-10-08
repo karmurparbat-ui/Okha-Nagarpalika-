@@ -48,7 +48,7 @@
   .export-mode .main-table { width: 100% !important; border-collapse: collapse !important; }
   .export-mode .main-table th { font-size: 21px !important; padding: 4px 6px 14px !important; white-space: nowrap !important; vertical-align: middle; }
   .export-mode .main-table td { font-size: 28px !important; font-weight: 800 !important; padding: 3px 6px !important; white-space: nowrap !important; color: #0f172a; vertical-align: middle; }
-  .export-mode .main-table td.time-col { font-size: 23px !important; }
+  .export-mode .main-table td.time-col { font-size: 26px !important; }
   .export-mode .main-table tr.row-percent td { font-size: 24px !important; padding: 0 6px 10px !important; line-height: 1.4 !important; vertical-align: middle; color: #334155; }
   .export-mode .footer-credit { display: block !important; font-size: 16px !important; margin-top: 10px !important; padding-top: 8px !important; border-top: 1px solid #cbd5e1; color: #334155; }
   .export-mode .overflow-x-auto { overflow: visible !important; }
@@ -183,7 +183,8 @@
 (function () {
   'use strict';
   const ROWS = 6;
-  const SLOTS = ['૦૭ થી ૦૯', '૦૯ થી ૧૧', '૧૧ થી ૦૧', '૦૧ થી ૦૩', '૦૩ થી ૦૫', '૦૫ થી ૦૬'];
+  // સમય સ્લોટ – અંગ્રેજી આંકડામાં
+  const SLOTS = ['07 થી 09', '09 થી 11', '11 થી 01', '01 થી 03', '03 થી 05', '05 થી 06'];
   const GN = { f: 'સ્ત્રી', m: 'પુરુષ' };
   const LS_KEY = 'okha_nagarpalika_booth_v3', LS_OLD = 'okha_nagarpalika_booth_v2';
   const EW = 1300; // એક્સપોર્ટ પહોળાઈ (px)
@@ -216,7 +217,7 @@
     for (let i = 0; i < ROWS; i++) {
       const alt = i % 2;
       h += `<tr class="row-numbers ${alt ? 'bg-slate-50' : 'bg-white'}">
-        <td rowspan="2" class="time-col border border-slate-300 px-2 py-1 text-center font-bold text-slate-700 whitespace-nowrap align-middle text-base">${SLOTS[i]}</td>
+        <td rowspan="2" class="time-col border border-slate-300 px-2 py-1 text-center font-bold text-slate-700 whitespace-nowrap align-middle text-lg sm:text-xl">${SLOTS[i]}</td>
         ${inp('int', 'm', i, 'bg-amber-50')}${inp('int', 'f', i, 'bg-amber-50')}${tot('int', i)}
         ${inp('prg', 'm', i, 'bg-sky-50', 'sec-divider')}${inp('prg', 'f', i, 'bg-sky-50')}${tot('prg', i)}
       </tr>
