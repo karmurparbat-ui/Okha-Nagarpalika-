@@ -280,7 +280,7 @@
   /* ============================================================
      રેન્ડર
   ============================================================ */
-  function pct(v, base) { return (!base || base <= 0) ? '—' : (v / base * 100).toFixed(1) + '%'; }
+  function pct(v, base) { return (!base || base <= 0) ? '—' : (v / base * 100).toFixed(2) + '%'; }
   function setText(id, v) { const el = $(id); if (el) el.textContent = (v === '' || v == null) ? '—' : v; }
   function setVal(id, v) { const el = $(id); if (el && el !== document.activeElement && el.value !== v) el.value = v; }
   const lastOf = a => { for (let i = ROWS - 1; i >= 0; i--) if (a[i] !== '') return a[i]; return ''; };
@@ -404,7 +404,7 @@
       d.className = 'xv'; d.textContent = si[k].value || '\u00a0';
       el.replaceWith(d);
     });
-    // ટોચની એક જ લાઈન: બૂથ નંબર, સ્થળ, કુલ સ્ત્રી, પુરુષ, મતદારો
+    // ટોચની એક જ લાઈન: પ્રિસાઇડિંગ ઓફિસર, મોબાઈલ, બૂથ નં., સ્થળ, પુરુષ, સ્ત્રી, કુલ
     const esc = t => String(t).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
     const rf = n(state.reg.f), rm = n(state.reg.m);
     const hb = (l, v, fx, col) => `<div style="flex:${fx};min-width:0;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;padding:4px 10px 10px;"><div style="font-size:15px;font-weight:700;color:#475569;line-height:1.6;">${l}</div><div style="font-size:26px;font-weight:800;color:${col || '#0f172a'};line-height:1.7;min-height:46px;white-space:nowrap;">${v ? esc(v) : '&nbsp;'}</div></div>`;
@@ -412,7 +412,7 @@
     strip.style.cssText = 'display:flex;gap:8px;margin-bottom:10px;';
     strip.innerHTML = hb('પ્રિસાઇડિંગ ઓફિસર', state.info.officer, 2.2) + hb('મોબાઈલ નંબર', state.info.mobile, 1.6) +
       hb('બૂથ નં.', state.info.boothNo, 0.9) + hb('બૂથ / સ્થળ', state.info.boothName, 2.4) +
-      hb('કુલ સ્ત્રી', state.reg.f, 1) + hb('કુલ પુરુષ', state.reg.m, 1) +
+      hb('કુલ પુરુષ', state.reg.m, 1) + hb('કુલ સ્ત્રી', state.reg.f, 1) +
       hb('કુલ મતદારો', String(rf + rm), 1.1, '#1d4ed8');
     c.querySelector('.reg-table').parentElement.remove();
     c.querySelector('h1').parentElement.remove();
